@@ -40,11 +40,23 @@ jobs:
       should_skip: ${{ steps.changed-files.outputs.only_changed == 'true' }}
 
     steps:
+      - name: Start Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
+        with:
+          task: start-measurement
+
+    
       - name: Checkout
         uses: actions/checkout@v4
         with:
           # Assume PRs are less than 50 commits
           fetch-depth: 50
+          
+      - name: Checkout Repo 
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
+        with:
+          task: get-measurement
+          label: 'repo checkout'
 
       - name: Get changed files
         id: changed-files
@@ -56,6 +68,17 @@ jobs:
             !.github/workflows/ci.yml
             packages/create-vite/template**
             **.md
+            
+      - name: Measure get changed files
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
+        with:
+          task: get-measurement
+          label: 'measure get changed files'
+          
+      - name: Show Energy Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4 # use hash or @vX here (See note below)
+        with:
+          task: display-results
 
   test:
     needs: changed
